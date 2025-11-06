@@ -13,8 +13,8 @@ In questa guida rapida imparerai come usare dbt con Snowflake. Ti mostreremo com
 Snowflake offre anche un quickstart separato con un dataset pubblico differente. Per maggiori dettagli vedi la documentazione Snowflake.
 
 ### Prerequisiti  
-- Devi avere un account dbt.  
-- Devi avere un account trial di Snowflake. Durante la creazione del trial assicurati di scegliere l’**Enterprise edition** in modo da avere accesso come `ACCOUNTADMIN`.  
+1. Avere un account dbt.  
+2. Avere un account trial di Snowflake (**Enterprise edition**).  
 - Per una implementazione completa, considera le questioni organizzative quando scegli il provider cloud. Per scopi di questa configurazione, tutti i cloud provider e le region vanno bene — scegli quello che vuoi.
 
 ## Crea un nuovo worksheet in Snowflake  
