@@ -14,8 +14,7 @@ Snowflake offre anche un quickstart separato con un dataset pubblico differente.
 
 ### Prerequisiti  
 1. Avere un account dbt.  
-2. Avere un account trial di Snowflake (**Enterprise edition**).  
-- Per una implementazione completa, considera le questioni organizzative quando scegli il provider cloud. Per scopi di questa configurazione, tutti i cloud provider e le region vanno bene — scegli quello che vuoi.
+2. Avere un account trial di Snowflake (**Enterprise edition**, **AWS**).  
 
 ## Crea un nuovo worksheet in Snowflake  
 1. Accedi al tuo account trial Snowflake.  
