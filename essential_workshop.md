@@ -1,29 +1,26 @@
 # Quickstart per dbt e Snowflake
 
 ## Introduzione  
-In questa guida rapida imparerai come usare dbt con Snowflake. Ti mostreremo come:  
-- Creare un nuovo worksheet in Snowflake.  
+In questo essentials vedremo come usare dbt con Snowflake.
+
+In particolare:  
 - Caricare dati di esempio nel tuo account Snowflake.  
 - Collegare dbt a Snowflake.  
-- Prendere una query di esempio e trasformarla in un **modello** in dbt (in dbt un modello è semplicemente una `SELECT`).  
-- Aggiungere **sources** al tuo progetto dbt. I sources ti permettono di dare un nome e una descrizione ai dati grezzi già caricati in Snowflake.  
+- Prendere una query di esempio e trasformarla in un **modello** in dbt (in *dbt model* è semplicemente una `SELECT`).  
+- Aggiungere **sources** al tuo progetto dbt. Le *sources* ti permettono di dare un nome e una descrizione ai dati grezzi già caricati in Snowflake.  
 - Aggiungere **test** ai tuoi modelli.  
 - Documentare i tuoi modelli.  
 - Programmare un job per l’esecuzione.  
-Snowflake offre anche un quickstart separato con un dataset pubblico differente. Per maggiori dettagli vedi la documentazione Snowflake.
 
 ### Prerequisiti  
 1. Avere un account dbt.  
 2. Avere un account trial di Snowflake (**Enterprise edition**, **AWS**).  
 
-## Crea un nuovo worksheet in Snowflake  
-1. Accedi al tuo account trial Snowflake.  
-2. Nell’interfaccia Snowflake clicca su **+ Create** nell’angolo sinistro sotto il logo Snowflake. Dal menu a tendina scegli **SQL Worksheet**.
-
 ## Carica i dati  
-I dati usati qui sono memorizzati come file CSV in un bucket pubblico su S3. I passaggi seguenti ti guidano su come preparare il tuo account Snowflake per questi dati e caricarli.
+I dati che useremo sono memorizzati come file CSV in un bucket pubblico su S3. Vediamo come preparare questi dati e caricarli.
+1. Accedi a snowflake e crea un nuovo worksheet.
 
-1. Crea un nuovo virtual warehouse, due nuovi database (uno per i dati grezzi “raw”, l’altro per lo sviluppo futuro con dbt), e due nuovi schemi (uno per i dati `jaffle_shop`, l’altro per `stripe`). Esegui questi comandi SQL nella Editor del worksheet e clicca “Run”:  
+2. Crea un nuovo virtual warehouse, due nuovi database (uno per i dati grezzi “raw”, l’altro per lo sviluppo futuro con dbt), e due nuovi schemi (uno per i dati `jaffle_shop`, l’altro per `stripe`). Esegui questi comandi SQL nella Editor del worksheet e clicca “Run”:  
    ```sql
    create warehouse transforming;
    create database raw;
@@ -31,7 +28,8 @@ I dati usati qui sono memorizzati come file CSV in un bucket pubblico su S3. I p
    create schema raw.jaffle_shop;
    create schema raw.stripe;
    ```
-2. Nel database `raw` e negli schemi `jaffle_shop` e `stripe` crea tre tabelle e carica i dati rilevanti in esse:  
+
+3. Nel database `raw` e negli schemi `jaffle_shop` e `stripe` crea tre tabelle e carica i dati rilevanti in esse:  
    - Pulisci l’Editor, poi esegui questo comando per creare la tabella `customers`:  
      ```sql
      create table raw.jaffle_shop.customers
@@ -95,7 +93,8 @@ I dati usati qui sono memorizzati come file CSV in un bucket pubblico su S3. I p
          skip_header = 1
      );
      ```
-3. Verifica che i dati siano caricati eseguendo queste query di controllo:  
+
+4. Verifica che i dati siano caricati eseguendo queste query di controllo:  
    ```sql
    select * from raw.jaffle_shop.customers;
    select * from raw.jaffle_shop.orders;
