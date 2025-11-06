@@ -4,19 +4,22 @@
 In questo essentials vedremo come usare dbt con Snowflake.
 
 In particolare:  
-- Caricare dati di esempio nel tuo account Snowflake.  
-- Collegare dbt a Snowflake.  
-- Prendere una query di esempio e trasformarla in un **modello** in dbt (in *dbt model* è semplicemente una `SELECT`).  
-- Aggiungere **sources** al tuo progetto dbt. Le *sources* ti permettono di dare un nome e una descrizione ai dati grezzi già caricati in Snowflake.  
-- Aggiungere **test** ai tuoi modelli.  
-- Documentare i tuoi modelli.  
-- Programmare un job per l’esecuzione.  
+1. Caricare dati di esempio nel tuo account Snowflake.  
+2. Collegare dbt a Snowflake.  
+3. Prendere una query di esempio e trasformarla in un **modello** in dbt (in *dbt model* è semplicemente una `SELECT`).  
+4. Aggiungere **sources** al tuo progetto dbt. Le *sources* ti permettono di dare un nome e una descrizione ai dati grezzi già caricati in Snowflake.  
+5. Aggiungere **test** ai tuoi modelli.  
+6. Documentare i tuoi modelli.  
+7. Programmare un job per l’esecuzione.  
 
-### Prerequisiti  
-1. Avere un account dbt.  
-2. Avere un account trial di Snowflake (**Enterprise edition**, **AWS**).  
+## Prerequisiti  
+- Avere un account dbt.  
+- Avere un account trial di Snowflake (**Enterprise edition**, **AWS**).  
 
-## Carica i dati  
+---
+
+
+# Caricare i dati su Snowflake 
 I dati che useremo sono memorizzati come file CSV in un bucket pubblico su S3. Vediamo come preparare questi dati e caricarli.
 1. Accedi a snowflake e crea un nuovo worksheet.
 
