@@ -1,8 +1,8 @@
 # Today's notebook
 ## Accounts & Setup
-   1. - [ ] Create a dbt account. (link)
-   1. - [ ] Create a Snowflake trial account (link).
-   2. - [ ] Load data into snowflake
+- [ ] Create a dbt account. (link)
+- [ ] Create a Snowflake trial account (link).
+- [ ] Load data into snowflake
 - *New worksheet*:
 
     ```sql
@@ -70,15 +70,13 @@
     select * from raw.stripe.payment;  
     ```
 --- 
-
-   
-   1. - [ ] Connect Snowflake & dbt.
-   - Using **Partner Connect**:
+- [ ] Connect Snowflake & dbt.
+    - Using **Partner Connect**:
     
         <img src="image.png" alt="image" width="280" border="1"/>  <img src="image-2.png" alt="image-2" width="350" border="1" /> <img src="image-1.png" alt="image-1" width="350" border="1"/>
     
 
-- **Manual connection**:
+  - **Manual connection**:
 
     Recomended:
 
