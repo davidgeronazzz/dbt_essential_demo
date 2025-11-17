@@ -2,19 +2,19 @@
 
 !!! Copy paste files for examples are shared from Git: [til.bi/dbtguide](http://til.bi/dbtguide)
 
-# Intro Slides
+## Intro Session
 
-1. #### Wifi password, setup & repo link
+1. **Wifi password, setup & repo link**
 
-2. #### Ciao a tutti e benvenuti alla dbt Essenstials "NOME EVENTO". Oggi vi guideremo alla scoperta di dbt Cloud, partendo dalle nozioni di base con un approccio pratico.
+2. **Ciao a tutti e benvenuti alla dbt Essenstials "NOME EVENTO". Oggi vi guideremo alla scoperta di dbt Cloud, partendo dalle nozioni di base con un approccio pratico**.
 
-3. #### Ecco quello che faremo oggi ... mostra i il programma di oggi. 
+3. **Ecco quello che faremo oggi ... mostra i il programma di oggi**. 
 
-4. #### Ma prima di tutto, le presentazioni: dal team di consulenza di The Information Lab Italia abbiamo .... e ... . Abbiamo anche .... che ci aiuta in sala, quindi se in qualsiasi momento vi trovate in difficoltà o avete bisogno di aiuto, basta alzare la mano e vi diamo una mano.
+4. **Ma prima di tutto, le presentazioni: dal team di consulenza di The Information Lab Italia abbiamo .... e ... . Abbiamo anche .... che ci aiuta in sala, quindi se in qualsiasi momento vi trovate in difficoltà o avete bisogno di aiuto, basta alzare la mano e vi diamo una mano**.
      
-5. #### Lunedì abbiamo inviato un'e-mail con le istruzioni per la configurazione generale, poiché questa operazione può richiedere un po' di tempo. Qualcuno non l'ha ancora completata? In tal caso, visitate questo link e seguite le istruzioni riportate. 
+5. **Lunedì abbiamo inviato un'e-mail con le istruzioni per la configurazione generale, poiché questa operazione può richiedere un po' di tempo. Qualcuno non l'ha ancora completata? In tal caso, visitate questo link e seguite le istruzioni riportate**. 
 
-6. #### Facciamo un'idea della situazione, alzate la mano se: 
+6. **Facciamo un'idea della situazione, alzate la mano se**: 
     - Avete già utilizzato dbt?
     - Avete già utilizzato un CTE? 
     - Avete già creato una stored procedure?  
@@ -22,76 +22,69 @@
     - Avete già utilizzato un linguaggio di programmazione (python/java/jinja)?
 
 
-7. #### dbt (data build tool) è un framework open source che consente di trasformare i dati direttamente all’interno del data warehouse usando SQL e principi di ingegneria del software.
-8. #### Nasce per semplificare la fase di Transform nell’approccio ELT, reso possibile dal cloud computing.
-9. #### Con dbt, gli analisti possono scrivere trasformazioni in SQL in modo modulare, versionato e testabile, proprio come sviluppatori di software.
-10. #### Ogni modello SQL diventa un blocco riutilizzabile che dbt collega automaticamente, creando una chiara data lineage.
-11. #### Il tool gestisce la sequenza ottimale di esecuzione e genera documentazione automatica del progetto.
-12. #### dbt incoraggia l’uso di version control, testing, e continuous integration per garantire qualità e collaborazione.
-13. #### La versione dbt Cloud aggiunge funzionalità di orchestrazione, scheduling e governance centralizzata.
-14. #### In sostanza, dbt porta le best practice dell’ingegneria del software nel mondo della data analytics, migliorando trasparenza, affidabilità e velocità nello sviluppo.
+7. **dbt (data build tool) è un framework open source che consente di trasformare i dati direttamente all’interno del data warehouse usando SQL e principi di ingegneria del software**.
+8. **Nasce per semplificare la fase di Transform nell’approccio ELT, reso possibile dal cloud computing**.
+9. **Con dbt, gli analisti possono scrivere trasformazioni in SQL in modo modulare, versionato e testabile, proprio come sviluppatori di software**.
+10. **Ogni modello SQL diventa un blocco riutilizzabile che dbt collega automaticamente, creando una chiara data lineage**.
+11. **Il tool gestisce la sequenza ottimale di esecuzione e genera documentazione automatica del progetto**.
+12. **dbt incoraggia l’uso di version control, testing, e continuous integration per garantire qualità e collaborazione**.
+13. **La versione dbt Cloud aggiunge funzionalità di orchestrazione, scheduling e governance centralizzata**.
+14. **In sostanza, dbt porta le best practice dell’ingegneria del software nel mondo della data analytics, migliorando trasparenza, affidabilità e velocità nello sviluppo**.
       
       
-15. #### Ma il modo migliore per capirlo è utilizzarlo. Per la sessione di oggi avremo bisogno di alcuni file, quindi se vai a questo link e scarichi i file che ci serviranno.
+15. **Ma il modo migliore per capirlo è utilizzarlo. Per la sessione di oggi avremo bisogno di alcuni file, quindi se vai a questo link e scarichi i file che ci serviranno**.
       
-16. #### E se vai a questo link, troverai una guida passo passo per tutto quello che faremo oggi.
+16. **E se vai a questo link, troverai una guida passo passo per tutto quello che faremo oggi**.
 
-# Using dbt Cloud Intro session
+## dbt Cloud Introduzione
+1. Set-up della connessione con dbt cloud.
+2. Iniziare il progetto dbt
+3. Commit + sync  
+4. Crea un nuovo Branch: **dev**  
+5. Parlare della finestra: barra di navigazione a sinistra, area centrale, area di compilazione/visualizzazione dei risultati, area dei comandi:
+   - La barra di navigazione a sinistra è dove interagiamo con i file e le cartelle del progetto/repository
+   - Area centra è dove scriviamo il codice
+   - Linea dei comandi è dove eseguiamo i comandi.
+6. Talk through the folder structure:
+   - Models: dove inseriamo le informazioni che determinano i nostri modelli (query e impostazioni)
+   - Macros: dove possiamo scrivere delle macro che possiamo chiamare a piacere
+   - Seeds: dove mettiamo dei fils csv che ci servono
+   - Tests: dove possiamo inserire dei test custom sui nostri modelli
+7. Non mi soffermo troppo, saranno comunque più chiari mano a mano che ne vedete l'uso
+---
+## Example models
+1. Create un nuovo file e scrivete `select * from raw.jaffle_shop.customers` e schiacciate su "preview".
+   >Possiamo scrivere quello che vogliamo, guardiamo i modelli di esempio.
+2. Come faccio a trasferire ora questo su snowflake (nostro DWH): `dbt run` command
+   >Builds the two models  
+3.  Vediamo se su snowflake sono stati costruiti.
+4.  Guarda i file nell'esempio: **2 modelli** che sono istruzioni `select` e un **file schema yaml** che ci permette di fare *documentazione e test*.
+5.  Mostra l'**anteprima** (`preview`) e la **compilazione** (`compile`) e spiega cosa fanno.
+6.  Crea una nuova cartella in `models` chiamata `jaffle_shop`.
+7.  Configura il file `dbt_project.yml`:
+    - Cambia il nome del progetto in **`snowflake_workshop`** nelle righe 5 e 39.
+    - Aggiungi la **materializzazione** `jaffle_shop`.
+    - Spiega che dbt crea `view` di default, ma possiamo impostarlo a livello di progetto.  
+8.  Crea un nuovo modello chiamato `jaffle_shop/customer.sql`.
+9.  Copia e incolla il codice SQL da `dbt_essentials_guide.md` e salvalo.
+10. Esegui `dbt run –select customer`.
+11. Trova l'errore (**punto e virgola** `;`).
+12. Esegui `dbt run –select jaffle_shop` per eseguire tutto ciò che è nella cartella del modello `jaffle_shop`.
+13. Parla delle configurazioni di materializzazione, a livello di progetto (`dbt_project.yml`) e a livello di modello.
+14. Mostra i blocchi di configurazioni che si possono mettere all'inizio di ogni modello:
+    -  `{{ config(materialized='table') }}`
+    -  due parole sulle macro e jinja.
 
-1. Set-up the user credentials in dbt cloud using the information in connection\_details.txt
-
-![][image1]
-
-2. Initialise dbt project
-
-3. Commit and sync  
-4. Create Branch  
-   5. Intro-training  
-6. Talk through window \- navbar (on left), content area and command line  
-   7. Navbar is how you interact with folders and files in the repository  
-   8. Content area is where you write your sql and other files  
-   9. Command line is where you execute dbt commands
-
-10. Talk through the folder structure  
-     
-11. Say that you’ll make it clear when to follow along and when just to watch
-
-12. Create a scratch pad and write “select \* from dbt\_course.lego.colors” and hit preview  
-   13. So we can write sql if we want, but look at the example models
-
-14. Do dbt run command  
-   15. Builds the two models  
-16. Look in snowflake to confirm  
-17. Look at the files in example \- 2 models which are select statements and a schema yaml which lets us do documentation and tests.  
-      
-18. Show preview and compile and what they do
-
-19. Make a new folder in models called lego  
-20. Configure dbt\_project.yml  
-    1. change project name to my\_first\_dbt in line 5 and 39,   
-    2. add lego materialization  
-       3. Explain that dbt makes views by default, but we can set up at the project level
-
-![][image2]
-
-15. Create a new model called lego/parts\_per\_set.sql  
-16. Copy and paste in the sql from dbt-essentials-script-01.txt and save it
-
-17. Do dbt run –select parts\_per\_set  
-18. Find the error (;)
-
-19. Do dbt run –select lego to run everything in the lego model folder  
-20. Compare the lineage of parts\_per\_set and my\_second\_dbt\_model, and look at the differences. We’re actually reading from 5 tables:  
-    1. Parts  
-    2. Inventory\_parts  
-    3. Inventories  
-    4. Sets  
-    5. Themes  
-21. Create a sources.yml file in the lego folder  
+15. Compare the lineage of parts\_per\_set and my\_second\_dbt\_model, and look at the differences. We’re actually reading from 5 tables:  
+   1. Parts  
+   2. Inventory\_parts  
+   3. Inventories  
+   4. Sets  
+   5. Themes  
+16. Create a sources.yml file in the lego folder  
     1. Create the sources with name, database, schema and tables, with names for parts,   
     2. inventory\_parts, inventories, sets and themes
 
-![][image3]
 
 22. Save the file  
     1. Maybe Demo the generate model capabilities (don’t save)
@@ -125,8 +118,6 @@
     1. Create the models, with name unique\_parts/parts\_per\_set, a description, and put in   
     2. not\_null data\_tests on part\_num & theme\_name, set\_name and set\_year
 
-![][image4]
-
 34. Do dbt build to confirm everything works  
 35. Do dbt test and see the failure  
 36. Not\_null will fail on my\_first\_dbt\_model  
@@ -150,7 +141,60 @@
 
     
 
-40. Save and do a dbt build which will go through, test and run  
+40. Save and do a dbt build which will go through, test and run 
+
+## 🛠️ Traduzione Punti dbt
+
+* **15.** Crea un nuovo modello chiamato **`lego/parts_per_set.sql`**.
+* **16.** Copia e incolla il codice SQL da `dbt-essentials-script-01.txt` e salvalo.
+* **17.** Esegui **`dbt run –select parts_per_set`**.
+* **18.** Trova l'errore (**punto e virgola** `;`).
+* **19.** Esegui **`dbt run –select lego`** per eseguire tutto ciò che è nella cartella del modello `lego`.
+* **20.** **Confronta la *lineage* (stirpe/provenienza)** di `parts_per_set` e `my_second_dbt_model` e osserva le differenze. Stiamo effettivamente leggendo da 5 tabelle:
+    * `Parts`
+    * `Inventory_parts`
+    * `Inventories`
+    * `Sets`
+    * `Themes`
+* **21.** Crea un file **`sources.yml`** nella cartella `lego`:
+    * Crea le **sorgenti** con `name`, `database`, `schema` e `tables`, con nomi per `parts`,
+    * `inventory_parts`, `inventories`, `sets` e `themes`.
+* **22.** Salva il file.
+    * Magari dimostra le capacità di **generazione di modelli** (`generate model capabilities`) (non salvare).
+* **23.** Torna al blocco note (`scratch pad`) e sostituisci il nome della tabella con la **funzione `source`**:
+    * Mostra l'**anteprima** (`preview`) e la **compilazione** (`compile`).
+* **24.** Torna al file **`parts_per_set.sql`** e sostituisci le tabelle *hardcoded* (scritte direttamente) con la **funzione `source`** `{{ source(‘source’,’table’)}}`.
+* **25.** Mostra come si **aggiorna la *lineage***.
+* **26.** Crea un nuovo file in `lego` chiamato **`unique_parts.sql`**.
+* **27.** Copia il codice SQL interno della CTE, quindi incollalo in `unique_parts.sql`.
+* **28.** Aggiungi un **blocco `config`** in alto per renderlo una **`view`**.
+* **29.** Salvalo.
+* **30.** Aggiorna la CTE in `parts_per_set` per selezionare `*` da **`{{ref('unique_parts')}}`**.
+* **31.** Esegui un **`dbt run –select lego`**:
+    * Crea `unique_parts` per primo, in quanto a **monte** (*upstream*) e come `view`.
+    * Crea `parts_per_set` per secondo e come `table`.
+
+---
+
+## 💻 Comandi, Documentazione e Test
+
+* **32.** Passa alle slide e mostra l'anatomia del comando dbt e gli elenchi dei comandi.
+* **33.** Crea un file **`schema.yml`** nella cartella `lego`:
+    * Crea i **modelli**, con nome `unique_parts/parts_per_set`, una descrizione e inserisci i **test di dato `not_null`** su `part_num` e `theme_name`, `set_name` e `set_year`.
+* **34.** Esegui **`dbt build`** per confermare che tutto funzioni.
+* **35.** Esegui **`dbt test`** e osserva il **fallimento**.
+* **36.** Il test `not_null` fallirà su `my_first_dbt_model`.
+    * **De-commenta** l'ultima riga, quindi salva ed esegui nuovamente **`dbt build`**.
+* **37.** Quindi, i file **`yml`** possono configurare sia la **documentazione** che aggiungere **test**. Li abbiamo implementati nello `schema.yml`, ma possiamo anche inserirli a livello di **sorgente** (`source`).
+* **38.** Prendi il file **`sources.yml`** dalla cartella iniziale (o completata) e aggiorna il file `sources.yml` per includere tutti i **test di dato** e la **documentazione**:
+    * Qui ho incluso tutte le tabelle, aggiunto descrizioni e applicato anche test di dato alle tabelle sorgente.
+* **39.** Esegui **`dbt docs generate`** e sfoglia la **documentazione**:
+    * **DAG** (Grafo Aciclico Diretto)
+    * Sorgente: `lego.sets+`
+    * Viste (view) di Progetto vs Database
+    * Guarda `parts`
+        * Menziona che la **descrizione** può utilizzare **Markdown** usando la funzione `docs`.
+* **40.** Salva ed esegui un **`dbt build`** che completerà l'operazione, eseguirà i test e il *run*. 
   
 
 
