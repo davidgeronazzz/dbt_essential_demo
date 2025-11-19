@@ -226,12 +226,32 @@ Now, lets create our staging models (1-1 with our source tables):
 In dbt we configure our sources using `.yml` files.\
 [YML files](https://docs.getdbt.com/best-practices/how-we-style/5-how-we-style-our-yaml) are human readable configuration files used to structure and document the models/objects inside the project.
 
-- [ ] Add a customer and order source
-- [ ] add a payments source.
+Let's configure our sources.
+- [ ] Create a .yml file `models/sources.yml`
+    ```yml
+    sources:
+    - name: jaffle_shop
+        database: raw  
+        schema: jaffle_shop  
+        tables:
+        - name: orders
+        - name: customers
+
+    - name: stripe
+        tables:
+        - name: payments
+    ```
+    *N.B.: we can avoid to add schema/database*
+In dbt, we refer to sources using the `source` macro: `{{ source('source_name', 'object_name') }}`.\
+Lets implement this in our models.
+- [ ] Create a staging model for payments source `models/stg_stripe__payments.sql`.
+- [ ] Rafactor `stg_jaffle_shop__orders` and `stg_jaffle_shop__customers` to use sources.
+
+Look at the lineage.
 
 ### Project structure
 ```
-jaffle_shop
+snowflake_workshop
 ├── README.md
 ├── analyses
 ├── seeds
@@ -257,7 +277,6 @@ jaffle_shop
 - [ ] Create the `staging`, `marts` and `intermediate` folders.
 - [ ] Refactor the *customer model* into `marts/marketing/dim_customers.sql`
 - [ ] Configure to materialize the *marts models* as tables and the *staging models* as views.
-- [ ] Add a staging model for payments source.
 - [ ] Create a `fct_orders.sql` into `marts/finance` folder.
 
 
