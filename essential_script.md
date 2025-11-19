@@ -74,14 +74,18 @@
 14. Mostra i blocchi di configurazioni che si possono mettere all'inizio di ogni modello:
     -  `{{ config(materialized='table') }}`
     -  due parole sulle macro e jinja.
+15. Andiamo avanti, guarda il lineage di customers e my\_second\_dbt\_model, vedi differenze? customer legge da due tabelle, perchè non compaiono?
+    Compariranno quando useremo ma macro `ref`.
+16. Creiamo i nostri stagin models `stg_jaffle_shop__orders.sql` e `stg_jaffle_shop__customers.sql`
+    I staging models sono 1-1 con le nostre source table.
 
-15. Compare the lineage of parts\_per\_set and my\_second\_dbt\_model, and look at the differences. We’re actually reading from 5 tables:  
+17. Compare the lineage of parts\_per\_set and my\_second\_dbt\_model, and look at the differences. We’re actually reading from 5 tables:  
    1. Parts  
    2. Inventory\_parts  
    3. Inventories  
    4. Sets  
    5. Themes  
-16. Create a sources.yml file in the lego folder  
+18. Create a sources.yml file in the lego folder  
     1. Create the sources with name, database, schema and tables, with names for parts,   
     2. inventory\_parts, inventories, sets and themes
 
