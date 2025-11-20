@@ -47,7 +47,7 @@
         );
 
     -- payments table -- 
-    create table raw.stripe.payment 
+    create table raw.stripe.payments
     ( id integer,
     orderid integer,
     paymentmethod varchar,
@@ -57,7 +57,7 @@
     _batched_at timestamp default current_timestamp
     );
     -- load payments data -- 
-    copy into raw.stripe.payment (id, orderid, paymentmethod, status, amount, created)
+    copy into raw.stripe.payments (id, orderid, paymentmethod, status, amount, created)
     from 's3://dbt-tutorial-public/stripe_payments.csv'
     file_format = (
         type = 'CSV'
@@ -68,7 +68,7 @@
     -- checkout the tables
     select * from raw.jaffle_shop.customers;
     select * from raw.jaffle_shop.orders;
-    select * from raw.stripe.payment;  
+    select * from raw.stripe.payments;  
     ```
 --- 
 
@@ -127,8 +127,9 @@ Look at the `models/example` folder:
 In order to refer to other models we use the **`ref`** macro: `select * from {{ref('my_model')}}` 
 
 ---
-Let's create a new model.\
-Create a new file inside: `models/customers.sql`
+Let's create a new model.
+
+- [ ] Create a new file inside: `models/customers.sql`
 ```sql
 with customers as (
     select
@@ -154,7 +155,8 @@ customer_orders as (
         customer_id,
         min(order_date) as first_order_date,
         max(order_date) as most_recent_order_date,
-        count(order_id) as number_of_orders
+        count(order_id) as number_of_orders,
+        sum(amount) as lifetime_value
     from orders
     group by 1
 
@@ -167,14 +169,15 @@ final as (
         customers.last_name,
         customer_orders.first_order_date,
         customer_orders.most_recent_order_date,
-        coalesce(customer_orders.number_of_orders, 0) as number_of_orders
+        coalesce(customer_orders.number_of_orders, 0) as number_of_orders,
+        customer_orders.lifetime_value
     from customers
     left join customer_orders using (customer_id)
 )
 
 select * from final;
 ```
-#### How to create a model in the data warehouse?
+#### How to create a model in the data platform?
 The `dbt run` command.
 - create a spcific model: `dbt run --select customers`
 - create all models inside a folder: `dbt run --select example`
@@ -227,7 +230,7 @@ In dbt we configure our sources using `.yml` files.\
 [YML files](https://docs.getdbt.com/best-practices/how-we-style/5-how-we-style-our-yaml) are human readable configuration files used to structure and document the models/objects inside the project.
 
 Let's configure our sources.
-- [ ] Create a .yml file `models/sources.yml`
+- [ ] Create a .yml file `models/sources.yml` and configure our sources.
     ```yml
     sources:
     - name: jaffle_shop
@@ -243,13 +246,26 @@ Let's configure our sources.
     ```
     *N.B.: we can avoid to add schema/database*
 In dbt, we refer to sources using the `source` macro: `{{ source('source_name', 'object_name') }}`.\
-Lets implement this in our models.
-- [ ] Create a staging model for payments source `models/stg_stripe__payments.sql`.
+Lets implement this in the models.
+
+- [ ] Create a staging model for payments source `models/stg_stripe__payments.sql`.\
+    To save time we can use the *codegen* package:
+    - go to https://hub.getdbt.com/ 
+    - install `codegen` package
+    - compile in a new file:
+        ```
+        {{ codegen.generate_base_model(
+            source_name='stripe',
+            table_name='payments',
+            materialized='table'
+        ) }}
+        ```
 - [ ] Rafactor `stg_jaffle_shop__orders` and `stg_jaffle_shop__customers` to use sources.
 
-Look at the lineage.
+Look at the lineage now.
 
 ### Project structure
+[How we structure our dbt projects](https://docs.getdbt.com/best-practices/how-we-structure/1-guide-overview). For example:
 ```
 snowflake_workshop
 ├── README.md
@@ -276,8 +292,51 @@ snowflake_workshop
 ```
 - [ ] Create the `staging`, `marts` and `intermediate` folders.
 - [ ] Refactor the *customer model* into `marts/marketing/dim_customers.sql`
+- [ ] Refactor the staging models we created into the staging folder
 - [ ] Configure to materialize the *marts models* as tables and the *staging models* as views.
+```yml
+models:
+  snowflake_workshop:
+    staging: 
+	    +materialized: view
+			
+    marts:
+	    +materialized: table
+```
 - [ ] Create a `fct_orders.sql` into `marts/finance` folder.
+```sql
+with orders as  (
+    select * from {{ ref ('stg_jaffle_shop__orders' )}}
+),
+
+payments as (
+    select * from {{ ref ('stg_stripe__payments') }}
+),
+
+order_payments as (
+    select
+        order_id,
+        sum (case when status = 'success' then amount end) as amount
+
+    from payments
+    group by 1
+),
+
+ final as (
+
+    select
+        orders.order_id,
+        orders.customer_id,
+        orders.order_date,
+        coalesce (order_payments.amount, 0) as amount
+
+    from orders
+    left join order_payments using (order_id)
+)
+
+select * from final
+```
+- [ ] *dim_customer* model should refer to this now.
 
 
 ### Source Freshness
