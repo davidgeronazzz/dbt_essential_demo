@@ -192,14 +192,17 @@ The `dbt run` command.
 - [ ] Take a look in Snowflake.
   
 ## Materialization (view or table?)
-dbt, by default, always creates models as views. But we can declare the materialization of a model in different ways:\
-at a project level, or at model level. The model level overwrites the project level.\
+dbt, by default, always creates models as views. But we can declare the materialization of a model in different ways:
+at a **project level**, or at **model level**.\
+**The model level overwrites the project level**.
+
 Look at the examples models:
 - config blocks in the models
 - config in the `example/schema.yml` file
 - project config in the `dbt_project.yml` file
 
 - [ ] Materiliaze the *customers* model as a table.
+- [ ] Take a look in snowflake
   
 ## Lineage
 Now, lets create our staging models (1-1 with our source tables):
@@ -231,11 +234,11 @@ Now, lets create our staging models (1-1 with our source tables):
 - [ ] Use the `ref` macro to refer these in the *customer* model
 
 ## Sources
-In dbt we configure our sources using `.yml` files.\
+In dbt we configure our sources using `.yml` files. This is the structure of [dbt models configurations](https://docs.getdbt.com/reference/model-configs) for example.\
 [YML files](https://docs.getdbt.com/best-practices/how-we-style/5-how-we-style-our-yaml) are human readable configuration files used to structure and document the models/objects inside the project.
 
-Let's configure our sources.
-- [ ] Create a .yml file `models/sources.yml` and configure our sources.
+- [ ] Let's configure our sources.
+- [ ] Create a .yml file `models/sources.yml` to configure our sources.
     ```yml
     sources:
         - name: jaffle_shop
@@ -252,6 +255,7 @@ Let's configure our sources.
     *N.B.: we can avoid to add schema/database*
 In dbt, we refer to sources using the `source` macro: `{{ source('source_name', 'object_name') }}`.\
 Lets implement this in the models.
+- [ ] Rafactor `stg_jaffle_shop__orders` and `stg_jaffle_shop__customers` to use sources.
 
 - [ ] Create a staging model for payments source `models/stg_stripe__payments.sql`.\
     To save time we can use the *codegen* package:
@@ -265,9 +269,9 @@ Lets implement this in the models.
             materialized='table'
         ) }}
         ```
-- [ ] Rafactor `stg_jaffle_shop__orders` and `stg_jaffle_shop__customers` to use sources.
 
-Look at the lineage now.
+- [ ] Look at the lineage now.
+- [ ] Do a `dbt run`.
 
 ## Project structure
 [How we structure our dbt projects](https://docs.getdbt.com/best-practices/how-we-structure/1-guide-overview). For example:
@@ -344,7 +348,7 @@ select * from final
 - [ ] *dim_customer* model should refer to this now.
 
 
-## Source Freshness
+## Source Freshness - [link](https://docs.getdbt.com/docs/deploy/source-freshness)
 - Freshness thresholds can be set in the YML file where sources are configured.\
   For each table, the keys `loaded_at_field` and freshness must be configured.
 
@@ -352,37 +356,45 @@ select * from final
 - The freshness of sources can then be determined with the command `dbt source freshness`.\
     *difference between the current time and the last timestamp*
 
-- [ ] Configure source freshness
+- [ ] Configure source freshness for the *orders* table.
     ```yml
-    config:
-        freshness:
-        warn_after:
-            count: count
-            period: period
-        error_after:
-            count: count
-            period: period
-    loaded_at_field: loaded_at_field
+    version: 2
+
+    sources:
+    - name: jaffle_shop
+        database: raw
+        tables:
+        - name: customers
+        - name: orders
+            config:
+            freshness:
+                warn_after:
+                count: 6
+                period: hour
+                error_after:
+                count: 30
+                period: day
+            loaded_at_field: _etl_loaded_at
+    
+    - name: stripe
+        database: raw
+        tables:
+        - name: payments
     ```
 - [ ] Run `dbt source freshness`
 - [ ] Look at the query log.
 
-## Testing
-Testing is used in software engineering to make sure that the code does what we expect it to.
-* In Analytics Engineering, testing allows us to make sure that the SQL transformations we write produce a model that meets our assertions.
-* In dbt, tests are written as select statements. These select statements are run against your materialized models to ensure they meet your assertions.
-
-In dbt, there are two types of tests - generic tests and singular tests:
-* These tests are predefined and can be applied to any column of your data models to check for common data issues. They are **written in YAML files**.
-* Singular tests are data tests **defined by writing specific SQL queries that return records which fail the test conditions**:
-    designed for a single purpose or specific scenario within the data models.
+## Testing - [link](https://docs.getdbt.com/docs/build/data-tests)
+In dbt, there are two types of tests:
+- **Generic tests**\
+    These tests are predefined and can be applied to any column of your data models to check for common data issues. They are **written in YAML files**
+- **singular tests**\
+    Singular tests are data tests defined by **writing specific SQL queries** that return records **which fail the test conditions**
 
 dbt ships with four built in tests: *unique, not null, accepted values, relationships*.
 
 Tests can be run against your current project using a range of commands:
 - `dbt test` runs all tests in the dbt project
-- `dbt test --select test_type:generic`
-- `dbt test --select test_type:singular`
 - `dbt test --select one_specific_model`
 
 - [ ] Create the yml file to define the tests. `models/staging/jaffle_shop/_stg_jaffle_shop.yml`
@@ -429,9 +441,10 @@ group by 1
 having (total_amount < 0)
 ```
 - [ ] test the models.
+- [ ] Build the models.
   
 
-## Documentation
+## Documentation - [link](https://docs.getdbt.com/docs/build/documentation)
 * Documentation is essential for an analytics team to work effectively and efficiently. 
 * Strong documentation empowers users to self-service questions about data and enables new team members to on-board quickly.
 >Documentation should be as automated as possible and happen as close as possible to the coding.
@@ -486,9 +499,9 @@ models:
                 field: customer_id
 ```
 
-and `models/staging/jaffle_shop/_jaffle_shop.md`
+and `models/staging/jaffle_shop/_jaffle_shop.md` or create a `docs` folder and add `docs-paths: ["docs"]` in the `dbt_project.yml` file.
 
-```md
+```
 {% docs order_status %}
     
 One of the following values: 
@@ -503,40 +516,30 @@ One of the following values:
 
 {% enddocs %}
 ```
+- [ ] create the project documentation: `dbt docs denerate`.
+- [ ] take a look.
 
-## Deployemnt
-* Running dbt comand on a schedule.
-* dbt will use the *main* branch for deployment.
-* models on a schedule
-* Development in dbt is the process of building, refactoring, and organizing different files in your dbt project. This is done in a development environment using a development schema (dbt_jsmith) and typically on a non-default branch (i.e. feature/customers-model, fix/date-spine-issue). 
-* After making the appropriate changes, the development branch is merged to main/master so that those changes can be used in deployment.
-* Deployment in dbt (or running dbt in production) is the process of running dbt on a schedule in a deployment environment. The deployment environment will typically run from the default branch (i.e., main, master) and use a dedicated deployment schema (e.g., dbt_prod). The models built in deployment are then used to power dashboards, reporting, and other key business decision-making processes.
-* The use of development environments and branches makes it possible to continue to build your dbt project without affecting the models, tests, and documentation that are running in production.
-
+## Deployment
 
 * A deployment environment can be configured in dbt on the Orchestration > Environments page.
 * General Settings: You can configure which dbt version you want to use and you have the option to specify a branch other than the default branch.
-* Data Warehouse Connection: You can set data warehouse specific configurations here. For example, you may choose to use a dedicated warehouse for your production runs in Snowflake.
-* Deployment Credentials:Here is where you enter the credentials dbt will use to access your data warehouse:
-IMPORTANT: When deploying a real dbt Project, you should set up a separate data warehouse account for this run. This should not be the same account that you personally use in development.
-IMPORTANT: The schema used in production should be different from anyone's development schema.
-Scheduling a job in dbt
-Scheduling of future jobs can be configured in dbt on the Jobs page.
-You can select the deployment environment that you created before or a different environment if needed.
-Commands: A single job can run multiple dbt commands. For example, you can run dbt run and dbt test back to back on a schedule. You don't need to configure these as separate jobs.
-Triggers: This section is where the schedule can be set for the particular job.
-After a job has been created, you can manually start the job by selecting Run Now
-Reviewing Jobs
-The results of a particular job run can be reviewed as the job completes and over time.
-The logs for each command can be reviewed.
-If documentation was generated, this can be viewed.
-If dbt source freshness was run, the results can also be viewed at the end of a job.
-- setup a deployment environment.
-- setup a *deployment* job that
-  - run marts models at 30th minutes of every hour
-  - test the models
-  - check data fresheness.
-  - updates the documentation
+* Data Warehouse Connection: You can set data warehouse specific configurations. For example, you may choose to use a dedicated warehouse for your production runs in Snowflake.
+* Deployment Credentials: where you enter the credentials dbt will use to access your data warehouse:
+
+**Scheduling a job in dbt**
+* Scheduling of future jobs can be configured in dbt on the Jobs page.
+* Commands: A single job can run multiple dbt commands. For example, you can run dbt run and dbt test back to back on a schedule. You don't need to configure these as separate jobs.
+
+**Reviewing Jobs**\
+The results of a particular job run can be reviewed as the job completes and over time. The logs for each command can be reviewed.
+If documentation was generated, this can be viewed. If dbt source freshness was run, the results can also be viewed at the end of a job.
+
+- [ ] setup a deployment environment.
+- [ ] setup a *deployment* job that:
+- run marts models at 30th minutes of every hour
+- test the models
+- check data fresheness.
+- updates the documentation.
 
 ## dbt Catalog
 
@@ -577,20 +580,15 @@ Se sono in montagna e sono
 {{ frase }}
 
 -- 2.
-{% set animals = ['cnaguro', 'volpe', 'delfino'] %}
+{% set animals = ['canguro', 'volpe', 'delfino'] %}
 {{ animals[0] }}
 
-{% set animals = ['cnaguro', 'volpe', 'delfino'] %}
+{% set animals = ['canguro', 'volpe', 'delfino'] %}
 {{ animals[0] }}
 
 {% for j in range(10) %}
     select {{ j }} as number union all
 {% endfor %}
-
-{% for j in range(10) %}
-    select {{ j }} as number {% if not loop.last %} union all {% endif %}
-{% endfor %}
-
 
 {% for j in range(10) %}
     select {{ j }} as number {% if not loop.last %} union all {% endif %}
