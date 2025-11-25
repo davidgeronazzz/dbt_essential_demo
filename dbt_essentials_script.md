@@ -2,6 +2,44 @@
 
 !!! Copy paste files for examples are shared from Git: [til.bi/dbtguide](http://til.bi/dbtguide)
 
+### extra jinja dbt
+1. Variable
+2. If statement
+3. for loops
+4. loop last
+Solution:
+```sql
+{%- set payment_methods = ["bank_transfer", "credit_card", "coupon", "gift_card"] -%}
+-- or, install dbt utils
+{% set payment_methods = dbt_utils.get_column_values(
+        table=ref('stg_payments'),
+        where="payment_method = 'bank_transfer'",
+        column='payment_method',
+        order_by='payment_method'
+) %}
+
+with 
+    payments as (
+        select * from {{ ref("stg_payments") }}
+        ),
+    
+    final as (
+        select
+            order_id,
+            {% for payment_method in payment_methods -%}
+                sum(
+                    case
+                        when payment_method = '{{ payment_method }}' then amount else 0
+                    end
+                ) as {{ payment_method }}_amount
+                {%- if not loop.last -%}, {% endif -%}
+            {%- endfor %}
+        from payments
+        group by 1
+    )
+select * from final
+```
+
 ## Intro Session
 
 1. **Wifi password, setup & repo link**
@@ -22,9 +60,10 @@
     - Avete già utilizzato un linguaggio di programmazione (python/java/jinja)?
 
 
+
 7. **dbt (data build tool) è un framework open source che consente di trasformare i dati direttamente all’interno del data warehouse usando SQL e principi di ingegneria del software**.
 8. **Nasce per semplificare la fase di Transform nell’approccio ELT, reso possibile dal cloud computing**.
-9. **Con dbt, gli analisti possono scrivere trasformazioni in SQL in modo modulare, versionato e testabile, proprio come sviluppatori di software**.
+9.  **Con dbt, gli analisti possono scrivere trasformazioni in SQL in modo modulare, versionato e testabile, proprio come sviluppatori di software**.
 10. **Ogni modello SQL diventa un blocco riutilizzabile che dbt collega automaticamente, creando una chiara data lineage**.
 11. **Il tool gestisce la sequenza ottimale di esecuzione e genera documentazione automatica del progetto**.
 12. **dbt incoraggia l’uso di version control, testing, e continuous integration per garantire qualità e collaborazione**.
@@ -33,8 +72,6 @@
       
       
 15. **Ma il modo migliore per capirlo è utilizzarlo. Per la sessione di oggi avremo bisogno di alcuni file, quindi se vai a questo link e scarichi i file che ci serviranno**.
-      
-16. **E se vai a questo link, troverai una guida passo passo per tutto quello che faremo oggi**.
 
 ## dbt Cloud Introduzione
 1. Set-up della connessione con dbt cloud.
@@ -53,31 +90,34 @@
 7. Non mi soffermo troppo, saranno comunque più chiari mano a mano che ne vedete l'uso
 ---
 ## Example models
-1. Create un nuovo file e scrivete `select * from raw.jaffle_shop.customers` e schiacciate su "preview".
-   >Possiamo scrivere quello che vogliamo, guardiamo i modelli di esempio.
-2. Come faccio a trasferire ora questo su snowflake (nostro DWH): `dbt run` command
-   >Builds the two models  
-3.  Vediamo se su snowflake sono stati costruiti.
-4.  Guarda i file nell'esempio: **2 modelli** che sono istruzioni `select` e un **file schema yaml** che ci permette di fare *documentazione e test*.
-5.  Mostra l'**anteprima** (`preview`) e la **compilazione** (`compile`) e spiega cosa fanno.
-6.  Crea una nuova cartella in `models` chiamata `jaffle_shop`.
-7.  Configura il file `dbt_project.yml`:
-    - Cambia il nome del progetto in **`snowflake_workshop`** nelle righe 5 e 39.
-    - Aggiungi la **materializzazione** `jaffle_shop`.
-    - Spiega che dbt crea `view` di default, ma possiamo impostarlo a livello di progetto.  
-8.  Crea un nuovo modello chiamato `jaffle_shop/customer.sql`.
-9.  Copia e incolla il codice SQL da `dbt_essentials_guide.md` e salvalo.
-10. Esegui `dbt run –select customer`.
-11. Trova l'errore (**punto e virgola** `;`).
-12. Esegui `dbt run –select jaffle_shop` per eseguire tutto ciò che è nella cartella del modello `jaffle_shop`.
-13. Parla delle configurazioni di materializzazione, a livello di progetto (`dbt_project.yml`) e a livello di modello.
-14. Mostra i blocchi di configurazioni che si possono mettere all'inizio di ogni modello:
+1. Create un nuovo file ("+") e scrivete `select * from raw.jaffle_shop.customers` e schiacciate su "preview".
+2. Su dbt possiamo fare le query che facciamo normalmente sul nostro DWH
+3. in dbt facciamo data modelling, diamo una struttura programmatica al nostro datawarehouse, usando file sql dove definiamo i nostri modelli
+4. cos'è un modello in dbt? ... spiega i modelli (essenzialmente select statement)
+5. ogni modello mappa a una tabella/view
+6. step logici tra le nostre risorse e i nostri modelli finali
+7. Vediamo i modelli di esempio.
+8. Guarda i file nell'esempio (guarder cartella example): **2 modelli** che sono istruzioni `select` e un **file schema yaml** che ci permette di fare *documentazione e test*.
+9. Mostra l'**anteprima** (`preview`) e la **compilazione** (`compile`) e spiega cosa fanno.
+10. Come faccio a trasferire ora questo su snowflake (nostro DWH): `dbt run` command
+   >Builds the two models
+11. Vediamo se su snowflake sono stati costruiti.
+12. Crea una nuova cartella in `models` chiamata `jaffle_shop`.
+13. Crea un nuovo modello chiamato `customer.sql`.
+14. Copia e incolla il codice SQL da `dbt_essentials_guide.md` e salvalo.
+15. Esegui `dbt run –select customer`.
+16. Trova l'errore (**punto e virgola** `;`).
+17. Esegui `dbt run –select jaffle_shop` per eseguire tutto ciò che è nella cartella del modello `jaffle_shop`.
+18. Parla delle configurazioni di materializzazione, a livello di progetto (`dbt_project.yml`) e a livello di modello.
+19. Mostra i blocchi di configurazioni che si possono mettere all'inizio di ogni modello:
     -  `{{ config(materialized='table') }}`
     -  due parole sulle macro e jinja.
-15. Andiamo avanti, guarda il lineage di customers e my\_second\_dbt\_model, vedi differenze? customer legge da due tabelle, perchè non compaiono?
+20. Andiamo avanti, guarda il lineage di customers e my\_second\_dbt\_model, vedi differenze? customer legge da due tabelle, perchè non compaiono?
     Compariranno quando useremo ma macro `ref`.
-16. Creiamo i nostri stagin models `stg_jaffle_shop__orders.sql` e `stg_jaffle_shop__customers.sql`
+21. Creiamo i nostri stagin models `stg_jaffle_shop__orders.sql` e `stg_jaffle_shop__customers.sql`
     I staging models sono 1-1 con le nostre source table.
+
+
 
 17. Compare the lineage of parts\_per\_set and my\_second\_dbt\_model, and look at the differences. We’re actually reading from 5 tables:  
    1. Parts  

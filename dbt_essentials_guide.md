@@ -467,7 +467,7 @@ models:
           - unique
           - not_null
       - name: status
-        description: "{{ doc('order_status') }}"
+        description: '{{ doc("order_status") }}'
         data_tests:
           - accepted_values:
               arguments:
@@ -597,40 +597,5 @@ Se sono in montagna e sono
 {% endfor %}
 
 ```
-1. Variable
-2. If statement
-3. for loops
-4. loop last
-Solution:
-```sql
-{%- set payment_methods = ["bank_transfer", "credit_card", "coupon", "gift_card"] -%}
--- or, install dbt utils
-{% set payment_methods = dbt_utils.get_column_values(
-        table=ref('stg_payments'),
-        where="payment_method = 'bank_transfer'",
-        column='payment_method',
-        order_by='payment_method'
-) %}
 
-with 
-    payments as (
-        select * from {{ ref("stg_payments") }}
-        ),
-    
-    final as (
-        select
-            order_id,
-            {% for payment_method in payment_methods -%}
-                sum(
-                    case
-                        when payment_method = '{{ payment_method }}' then amount else 0
-                    end
-                ) as {{ payment_method }}_amount
-                {%- if not loop.last -%}, {% endif -%}
-            {%- endfor %}
-        from payments
-        group by 1
-    )
-select * from final
-```
 
